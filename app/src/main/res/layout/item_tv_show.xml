@@ -26,6 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/_20sdp"
+            android:foreground="?selectableItemBackground"
             android:background="@drawable/bg_item_tv_show"
             android:paddingBottom="@dimen/_10sdp"
             app:layout_constraintBottom_toBottomOf="@+id/viewSupporter"
