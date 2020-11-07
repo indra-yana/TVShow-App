@@ -6,6 +6,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -39,7 +40,13 @@ public class MainActivity extends AppCompatActivity {
     private void doInitialization() {
         viewModel = new ViewModelProvider(this).get(MostPopularTVShowsViewModel.class);
 
-        tvShowsAdapter = new TVShowsAdapter(tvShows);
+        tvShowsAdapter = new TVShowsAdapter(tvShows, (tvShow, position) -> {
+            Intent intent = new Intent(getApplicationContext(), TVShowDetailsActivity.class);
+            intent.putExtra("tvShow", tvShow);
+
+            startActivity(intent);
+        });
+
         activityMainBinding.rvTvShowList.setHasFixedSize(true);
         activityMainBinding.rvTvShowList.setAdapter(tvShowsAdapter);
         activityMainBinding.rvTvShowList.addOnScrollListener(new RecyclerView.OnScrollListener() {

@@ -2,7 +2,9 @@ package com.training.tvshowapp.models;
 
 import com.google.gson.annotations.SerializedName;
 
-public class TVShow {
+import java.io.Serializable;
+
+public class TVShow implements Serializable {
 
     @SerializedName("id")
     private int id;
@@ -52,4 +54,5 @@ public class TVShow {
     public String getThumbnail() {
         return thumbnail;
     }
+
 }
