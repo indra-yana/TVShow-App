@@ -6,4 +6,7 @@
     <string name="text_dot">•</string>
     <string name="text_episodes">Episodes</string>
     <string name="text_website">Website</string>
+    <string name="text_try_again">Please try again!</string>
+    <string name="text_btn_retry">Retry</string>
+    <string name="text_something_went_wrong">Something went wrong!</string>
 </resources>

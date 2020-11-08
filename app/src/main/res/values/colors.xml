@@ -12,4 +12,7 @@
     <color name="colorTextSecondary">#4A5B82</color>
     <color name="colorTextOther">#FAD303</color>
     <color name="colorThemeExtra">#FF5252</color>
+    <color name="colorTextSuccess">#4CAF50</color>
+    <color name="colorTextDanger">#F44336</color>
+    <color name="colorTextWarning">#FFC107</color>
 </resources>

@@ -27,8 +27,9 @@ public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding activityMainBinding;
     private List<TVShow> tvShows = new ArrayList<>();
     private TVShowsAdapter tvShowsAdapter;
-    private int currentPage = 1;
-    private int totalAvailablePage = 1;
+    private int prevPage = 1;
+    private int nextPage = prevPage;
+    private int totalAvailablePage = prevPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,42 +55,53 @@ public class MainActivity extends AppCompatActivity {
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 if (!activityMainBinding.rvTvShowList.canScrollVertically(1)) {
-                    if (currentPage <= totalAvailablePage) {
-                        currentPage++;
-                        getMostPopularTVShows();
-
-                        Log.d(TAG, "End of recyclerview!");
+                    if (prevPage <= totalAvailablePage) {
+                        getMostPopularTVShows(nextPage);
+                        Log.d(TAG, "Pagination: End of page!");
                     }
+                }
+
+                if (activityMainBinding.rvTvShowList.canScrollVertically(-1)) {
+                    activityMainBinding.setNetWorkStateError(false);
                 }
             }
         });
 
-        getMostPopularTVShows();
+        getMostPopularTVShows(prevPage);
     }
 
-    private void getMostPopularTVShows() {
+    private void getMostPopularTVShows(int page) {
         toggleLoading();
+        activityMainBinding.setNetWorkStateError(false);
 
-        viewModel.getMostPopularTVShows(currentPage).observe(this, tvShowResponse -> {
+        viewModel.getMostPopularTVShows(page).observe(this, tvShowResponse -> {
             toggleLoading();
             if (tvShowResponse != null) {
+                nextPage++;
+                Log.d(TAG, "Pagination: PrevPage = " + prevPage);
+                Log.d(TAG, "Pagination: NextPage = " + nextPage);
+
+                prevPage = nextPage;
+
                 totalAvailablePage = tvShowResponse.getTotalPages();
+                Log.d(TAG, "Pagination: TotalAvailablePage = " + totalAvailablePage);
+
                 if (tvShowResponse.getTvShows() != null) {
                     int oldCount = tvShows.size();
 
                     tvShows.addAll(tvShowResponse.getTvShows());
                     tvShowsAdapter.notifyItemRangeInserted(oldCount, tvShows.size());
                 }
-
-                Log.d(TAG, "Delivered result!");
             } else {
+                activityMainBinding.setNetWorkStateError(true);
+                retryRequest();
                 Log.d(TAG, "Something went wrong!");
             }
         });
     }
 
     private void toggleLoading() {
-        if (currentPage == 1) {
+        if (prevPage == 1) {
             if (activityMainBinding.getIsLoading() != null && activityMainBinding.getIsLoading()) {
                 activityMainBinding.setIsLoading(false);
             } else {
@@ -102,5 +114,9 @@ public class MainActivity extends AppCompatActivity {
                 activityMainBinding.setIsLoadingMore(true);
             }
         }
+    }
+
+    private void retryRequest() {
+        activityMainBinding.btnRetryNetwork.setOnClickListener(v -> getMostPopularTVShows(nextPage));
     }
 }
