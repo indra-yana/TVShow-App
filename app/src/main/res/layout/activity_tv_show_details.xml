@@ -33,6 +33,10 @@
             name="runtime"
             type="String" />
 
+        <variable
+            name="netWorkStateError"
+            type="Boolean" />
+
         <import type="android.view.View" />
 
     </data>
@@ -375,7 +379,45 @@
             android:visibility="@{isLoading ? View.VISIBLE : View.INVISIBLE, default=invisible}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/networkStatusContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="@dimen/_2sdp"
+            android:visibility="@{netWorkStateError ? View.VISIBLE : View.INVISIBLE, default=invisible }"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/tvError"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_8sdp"
+                android:layout_weight="1"
+                android:textSize="@dimen/_10ssp"
+                android:text="@string/text_something_went_wrong"
+                android:ellipsize="end"
+                android:textColor="@color/colorTextDanger"
+                android:maxLines="1" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRetryNetwork"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/_8sdp"
+                android:includeFontPadding="false"
+                android:text="@string/text_btn_retry"
+                android:textAllCaps="false"
+                android:textSize="@dimen/_8ssp"
+                app:backgroundTint="@color/colorTextDanger" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

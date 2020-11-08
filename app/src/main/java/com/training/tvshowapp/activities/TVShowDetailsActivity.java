@@ -12,13 +12,13 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -36,6 +36,8 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class TVShowDetailsActivity extends AppCompatActivity {
+
+    private static final String TAG = TVShowDetailsActivity.class.getSimpleName();
 
     private ActivityTvShowDetailsBinding activityTvShowDetailsBinding;
     private TVShowDetailsViewModel viewModel;
@@ -60,6 +62,7 @@ public class TVShowDetailsActivity extends AppCompatActivity {
     private void getTVShowDetails() {
         // Show the loading indicator
         activityTvShowDetailsBinding.setIsLoading(true);
+        activityTvShowDetailsBinding.setNetWorkStateError(false);
 
         TVShow tvShow = (TVShow) getIntent().getSerializableExtra("tvShow");
         if (tvShow != null) {
@@ -122,7 +125,9 @@ public class TVShowDetailsActivity extends AppCompatActivity {
                         activityTvShowDetailsBinding.btnGoToEpisodes.setOnClickListener(v -> openEpisodesBottomSheet(tvShowDetailsResponse, tvShow));
                     }
                 } else {
-                    Toast.makeText(this, "Request time out!", Toast.LENGTH_SHORT).show();
+                    activityTvShowDetailsBinding.setNetWorkStateError(true);
+                    retryRequest();
+                    Log.d(TAG, "Something went wrong!");
                 }
             });
         }
@@ -190,15 +195,21 @@ public class TVShowDetailsActivity extends AppCompatActivity {
         }
 
         /* Optional Section Start */
+        /*
         FrameLayout frameLayout = episodesBottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
         if (frameLayout != null) {
             BottomSheetBehavior<View> bottomSheetBehavior = BottomSheetBehavior.from(frameLayout);
             bottomSheetBehavior.setPeekHeight(Resources.getSystem().getDisplayMetrics().heightPixels);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
         }
+        */
         /* Optional Section End */
 
         // Show the bottom sheet dialog
         episodesBottomSheetDialog.show();
+    }
+
+    private void retryRequest() {
+        activityTvShowDetailsBinding.btnRetryNetwork.setOnClickListener(v -> getTVShowDetails());
     }
 }
