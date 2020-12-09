@@ -26,8 +26,8 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/_20sdp"
-            android:foreground="?selectableItemBackground"
             android:background="@drawable/bg_item_tv_show"
+            android:foreground="?selectableItemBackground"
             android:paddingBottom="@dimen/_10sdp"
             app:layout_constraintBottom_toBottomOf="@+id/viewSupporter"
             app:layout_constraintTop_toTopOf="@+id/ivTvShow" />
@@ -104,5 +104,19 @@
             app:layout_constraintEnd_toEndOf="@id/tvStarted"
             app:layout_constraintStart_toStartOf="@id/tvStarted"
             app:layout_constraintTop_toBottomOf="@id/tvStarted" />
+
+        <ImageView
+            android:id="@+id/ivRemoveWatchlist"
+            android:layout_width="@dimen/_22sdp"
+            android:layout_height="@dimen/_22sdp"
+            android:layout_marginEnd="@dimen/_4sdp"
+            android:layout_marginBottom="@dimen/_8sdp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_delete"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:tint="@color/colorTextDanger" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

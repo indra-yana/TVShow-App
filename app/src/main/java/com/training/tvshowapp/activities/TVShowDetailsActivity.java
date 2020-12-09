@@ -27,6 +27,7 @@ import com.training.tvshowapp.databinding.ActivityTvShowDetailsBinding;
 import com.training.tvshowapp.databinding.LayoutEpisodesBottomSheetBinding;
 import com.training.tvshowapp.models.TVShow;
 import com.training.tvshowapp.responses.TVShowDetailsResponse;
+import com.training.tvshowapp.utilities.TempDataHolder;
 import com.training.tvshowapp.viewmodels.TVShowDetailsViewModel;
 
 import java.util.Arrays;
@@ -36,6 +37,7 @@ import java.util.stream.Collectors;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 public class TVShowDetailsActivity extends AppCompatActivity {
@@ -47,6 +49,7 @@ public class TVShowDetailsActivity extends AppCompatActivity {
     private BottomSheetDialog episodesBottomSheetDialog;
     private LayoutEpisodesBottomSheetBinding layoutEpisodesBottomSheetBinding;
     private TVShow tvShow;
+    private boolean isTVShowAvailableInWatchlist = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +63,7 @@ public class TVShowDetailsActivity extends AppCompatActivity {
         tvShow = (TVShow) getIntent().getSerializableExtra("tvShow");
 
         getTVShowDetails();
+        checkTVShowInWatchlist();
 
         activityTvShowDetailsBinding.ivBackButton.setOnClickListener(v -> onBackPressed());
     }
@@ -222,15 +226,50 @@ public class TVShowDetailsActivity extends AppCompatActivity {
     }
 
     private void actionAddToWatchList() {
-        Disposable disposable = viewModel.addToWatchList(tvShow)
-                .subscribeOn(Schedulers.io())
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        Disposable disposable;
+
+        if (isTVShowAvailableInWatchlist) {
+            disposable = viewModel.removeTVShowFromWatchlist(tvShow)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(() -> {
+                        isTVShowAvailableInWatchlist = false;
+                        TempDataHolder.IS_WATCHLIST_UPDATED = true;
+                        activityTvShowDetailsBinding.ivWatchList.setImageResource(R.drawable.ic_watchlist);
+                        compositeDisposable.dispose();
+
+                        Toast.makeText(getApplicationContext(), "Removed from watchlist!", Toast.LENGTH_SHORT).show();
+                    });
+        } else {
+            disposable = viewModel.addToWatchList(tvShow)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(() -> {
+                        TempDataHolder.IS_WATCHLIST_UPDATED = false;
+                        activityTvShowDetailsBinding.ivWatchList.setImageResource(R.drawable.ic_added);
+                        compositeDisposable.dispose();
+
+                        Toast.makeText(getApplicationContext(), "Added to watchlist!", Toast.LENGTH_SHORT).show();
+                    });
+
+        }
+
+        compositeDisposable.add(disposable);
+    }
+
+    private void checkTVShowInWatchlist() {
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+        Disposable disposable = viewModel.getTVShowFromWatchlist(String.valueOf(tvShow.getId()))
+                .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(() -> {
+                .subscribe(tvShow -> {
+                    isTVShowAvailableInWatchlist = true;
                     activityTvShowDetailsBinding.ivWatchList.setImageResource(R.drawable.ic_added);
-                    Toast.makeText(getApplicationContext(), "Added to watchlist", Toast.LENGTH_SHORT).show();
+                    compositeDisposable.dispose();
                 });
 
-        CompositeDisposable compositeDisposable = new CompositeDisposable();
         compositeDisposable.add(disposable);
     }
 }
