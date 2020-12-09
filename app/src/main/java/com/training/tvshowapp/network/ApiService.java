@@ -12,6 +12,9 @@ public interface ApiService {
     @GET("most-popular")
     Call<TVShowResponse> getMostPopularTVShows(@Query("page") int page);
 
+    @GET("most-popular")
+    Call<String> getMostPopularTVShowsAsJsonString(@Query("page") int page);
+
     @GET("show-details")
     Call<TVShowDetailsResponse> getTVShowDetails(@Query("q") String tvShowId);
 
