@@ -43,6 +43,7 @@ public class TVShowDetailsActivity extends AppCompatActivity {
     private TVShowDetailsViewModel viewModel;
     private BottomSheetDialog episodesBottomSheetDialog;
     private LayoutEpisodesBottomSheetBinding layoutEpisodesBottomSheetBinding;
+    private TVShow tvShow;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +54,7 @@ public class TVShowDetailsActivity extends AppCompatActivity {
 
     private void doInitialization() {
         viewModel = new ViewModelProvider(this).get(TVShowDetailsViewModel.class);
+        tvShow = (TVShow) getIntent().getSerializableExtra("tvShow");
 
         getTVShowDetails();
 
@@ -64,10 +66,9 @@ public class TVShowDetailsActivity extends AppCompatActivity {
         activityTvShowDetailsBinding.setIsLoading(true);
         activityTvShowDetailsBinding.setNetWorkStateError(false);
 
-        TVShow tvShow = (TVShow) getIntent().getSerializableExtra("tvShow");
         if (tvShow != null) {
             // Load TV Shows basic info
-            loadBasicTVShowDetails(tvShow);
+            loadBasicTVShowDetails();
 
             // Register and observe the view model
             viewModel.getTVShowDetails(String.valueOf(tvShow.getId())).observe(this, tvShowDetailsResponse -> {
@@ -177,7 +178,7 @@ public class TVShowDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void loadBasicTVShowDetails(TVShow tvShow) {
+    private void loadBasicTVShowDetails() {
         activityTvShowDetailsBinding.setTvShow(tvShow);
     }
 
