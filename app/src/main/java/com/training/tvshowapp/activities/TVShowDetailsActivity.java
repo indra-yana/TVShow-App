@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -16,11 +15,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.training.tvshowapp.R;
 import com.training.tvshowapp.adapters.EpisodesAdapters;
@@ -34,6 +32,11 @@ import com.training.tvshowapp.viewmodels.TVShowDetailsViewModel;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Collectors;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class TVShowDetailsActivity extends AppCompatActivity {
 
@@ -124,6 +127,10 @@ public class TVShowDetailsActivity extends AppCompatActivity {
                         // Setup button episodes
                         activityTvShowDetailsBinding.btnGoToEpisodes.setVisibility(View.VISIBLE);
                         activityTvShowDetailsBinding.btnGoToEpisodes.setOnClickListener(v -> openEpisodesBottomSheet(tvShowDetailsResponse, tvShow));
+
+                        // Setup Action Fab Add to Watchlist
+                        activityTvShowDetailsBinding.ivWatchList.setOnClickListener(v -> actionAddToWatchList());
+                        activityTvShowDetailsBinding.ivWatchList.setVisibility(View.VISIBLE);
                     }
                 } else {
                     activityTvShowDetailsBinding.setNetWorkStateError(true);
@@ -212,5 +219,18 @@ public class TVShowDetailsActivity extends AppCompatActivity {
 
     private void retryRequest() {
         activityTvShowDetailsBinding.btnRetryNetwork.setOnClickListener(v -> getTVShowDetails());
+    }
+
+    private void actionAddToWatchList() {
+        Disposable disposable = viewModel.addToWatchList(tvShow)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(() -> {
+                    activityTvShowDetailsBinding.ivWatchList.setImageResource(R.drawable.ic_added);
+                    Toast.makeText(getApplicationContext(), "Added to watchlist", Toast.LENGTH_SHORT).show();
+                });
+
+        CompositeDisposable compositeDisposable = new CompositeDisposable();
+        compositeDisposable.add(disposable);
     }
 }
