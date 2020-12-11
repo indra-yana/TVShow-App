@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         activityMainBinding.actionWatchlist.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), WatchlistActivity.class)));
-
+        activityMainBinding.actionSearch.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), SearchTVShowActivity.class)));
         getMostPopularTVShows(prevPage);
     }
 
